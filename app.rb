@@ -21,6 +21,11 @@ def seed_db db, barbers
   end
 end
 
+before do
+  db = get_db
+  @barbers = db.execute 'select * from barbers'
+end
+
 configure do # Данный код будет работаь при перезапуске приложения, то есть, когда мы заного запускаем консоль
   db = get_db
   db.execute "create table if not exists 'users' ('id' integer primary key autoincrement, 'username' text, 'phone' intenger, 'datestamp' text, 'barber' text, 'color' text);"
@@ -39,6 +44,8 @@ get '/about' do
 end
 
 get '/visit' do
+
+
 	erb :visit
 end
 
