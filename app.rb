@@ -9,11 +9,25 @@ def get_db
   return db
 end
 
-configure do # Данный код будет работаь при перезапуске приложения, то есть, когда мы заного запускаем консоль
-  @db = get_db
-  @db.execute "create table if not exists 'users' ('id' integer primary key autoincrement, 'username' text, 'phone' intenger, 'datestamp' text, 'barber' text, 'color' text);"
+def is_barber_exists? db, name
+  db.execute('select * from barbers where name=?', [name]).size > 0
+end
 
-  @db.execute "create table if not exists 'barbers' ('id' integer primary key autoincrement, 'name' text);"
+def seed_db db, barbers
+  barbers.each do |barber|
+    if !is_barber_exists? db, barber
+      db.execute 'insert into barbers (name) values (?)', [barber]
+    end
+  end
+end
+
+configure do # Данный код будет работаь при перезапуске приложения, то есть, когда мы заного запускаем консоль
+  db = get_db
+  db.execute "create table if not exists 'users' ('id' integer primary key autoincrement, 'username' text, 'phone' intenger, 'datestamp' text, 'barber' text, 'color' text);"
+
+  db.execute "create table if not exists 'barbers' ('id' integer primary key autoincrement, 'name' text);"
+
+  seed_db db,["Jessie Pinkman", "Walter White", "Gus Fring", "Mike Ehrhament"]
 end
 
 get '/' do
@@ -49,8 +63,8 @@ post '/visit' do
     return erb :visit
   end
 
-  @db = get_db
-  @db.execute "insert into users(name, phone, datestamp, barber, color) values (?, ?, ?, ?, ?)", [@username, @phone, @datetime, @barber, @color]
+  db = get_db
+  db.execute "insert into users(name, phone, datestamp, barber, color) values (?, ?, ?, ?, ?)", [@username, @phone, @datetime, @barber, @color]
 
 	erb "OK, username is #{@username}, #{@phone}, #{@datetime}, #{@barber}, #{@color}..."
 
