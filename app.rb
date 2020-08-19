@@ -9,9 +9,11 @@ def get_db
   return db
 end
 
-configure do
+configure do # Данный код будет работаь при перезапуске приложения, то есть, когда мы заного запускаем консоль
   @db = get_db
-  @db.execute "create table if not exists 'users' ('id' intenger primary key autoincrement, 'username' text, 'phone' intenger, 'datestamp' text, 'barber' text, 'color' text);"
+  @db.execute "create table if not exists 'users' ('id' integer primary key autoincrement, 'username' text, 'phone' intenger, 'datestamp' text, 'barber' text, 'color' text);"
+
+  @db.execute "create table if not exists 'barbers' ('id' integer primary key autoincrement, 'name' text);"
 end
 
 get '/' do
